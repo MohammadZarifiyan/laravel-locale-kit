@@ -11,7 +11,6 @@
         "Friday"
     ],
     "money_display_order": "amount_then_currency",
-    "numbers_direction": "ltr",
     "direction": "ltr",
     "numbers": [
         "0",
