@@ -9,7 +9,7 @@ The package also supports custom locale definitions and locale aliases.
 Install the package via Composer:
 
 ```shell
-composer require mohammad-zarifiyan/laravel-locale-kit:^1.0
+composer require mohammad-zarifiyan/laravel-locale-kit:^1.1
 ```
 
 # Publishing Locale Definitions
@@ -72,6 +72,28 @@ use MohammadZarifiyan\LaravelLocaleKit\LocaleKit;
 LocaleKit::get('direction', 'fa_IR');
 ```
 ---
+
+## aliases()
+
+Returns all registered locale aliases.
+
+```php
+use MohammadZarifiyan\LaravelLocaleKit\LocaleKit;
+
+$aliases = LocaleKit::aliases();
+```
+
+Example result:
+
+```php
+[
+    'en' => 'en_US',
+    'fa' => 'fa_IR',
+    'ar' => 'ar_SA',
+]
+```
+
+The returned array maps each alias to its corresponding locale identifier.
 
 ## getIdentifier()
 
@@ -145,4 +167,79 @@ Result:
 
 ```php
 'gregorian'
+```
+
+## definitions()
+
+Returns all loaded locale definitions.
+
+```php
+use MohammadZarifiyan\LaravelLocaleKit\LocaleKit;
+
+$definitions = LocaleKit::definitions();
+```
+
+Example result:
+
+```php
+[
+    'en_US' => [
+        'direction' => 'ltr',
+        'calendar_system' => 'gregorian',
+        // ...
+    ],
+    'fa_IR' => [
+        'direction' => 'rtl',
+        'calendar_system' => 'jalali',
+        // ...
+    ],
+]
+```
+
+The returned array is keyed by locale identifier, and each value contains the complete locale definition loaded by the package, including custom locale definitions.
+
+## Exporting Locale Definitions
+
+To export all loaded locale definitions as JSON files:
+
+```shell
+php artisan locale-kit:export
+```
+
+By default, the files are exported to `resources/locales`.
+
+Each locale definition is exported as a separate JSON file using its locale identifier as the filename.
+
+Example:
+
+```text
+resources/locales/
+├── meta.json
+├── en_US.json
+├── en_GB.json
+├── fa_IR.json
+└── ar_SA.json
+```
+
+The generated `meta.json` file contains additional information about the exported locales:
+
+```json
+{
+    "locales": [
+        "en",
+        "fa",
+        "ar"
+    ],
+    "defined_locales": [
+        "en_US",
+        "en_GB",
+        "fa_IR",
+        "ar_SA"
+    ],
+    "aliases": {
+        "en": "en_US",
+        "fa": "fa_IR",
+        "ar": "ar_SA"
+    }
+}
 ```

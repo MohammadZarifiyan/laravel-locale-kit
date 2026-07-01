@@ -34,6 +34,11 @@ class LocaleManager
 		$this->aliases[$alias] = $identifier;
 	}
 
+	public function aliases(): array
+	{
+		return $this->aliases;
+	}
+
 	public function getIdentifier(string $locale): ?string
 	{
 		if (str_contains($locale, '_')) {
@@ -116,6 +121,14 @@ class LocaleManager
 		return collect($customFiles)->filter($this->isLocaleDefinitionFile(...));
 	}
 
+	protected function getDefinition(SplFileInfo $file): mixed
+	{
+		$path = $file->getRealPath();
+		$contents = File::get($path);
+
+		return json_decode($contents, true);
+	}
+
 	protected function isLocaleDefinitionFile(SplFileInfo $file): bool
 	{
 		if ($file->getExtension() !== 'json') {
@@ -131,13 +144,27 @@ class LocaleManager
 	{
 		return $files->filter(fn (SplFileInfo $file) => $file->getBasename('.json') === $identifier)
 			->map(function (SplFileInfo $file) use ($key) {
-				$path = $file->getRealPath();
-				$contents = File::get($path);
-				$decodedContents = json_decode($contents, true);
+				$definition = $this->getDefinition($file);
 
-				return Arr::get($decodedContents, $key);
+				return Arr::get($definition, $key);
 			})
 			->filter()
 			->first();
+	}
+
+	public function definitions(): array
+	{
+		$result = $this->getPredefinedLocaleDefinitionFiles()
+			->mapWithKeys(fn (SplFileInfo $file) => [$file->getBasename('.json') => $this->getDefinition($file)])
+			->all();
+		$customDefinitions = $this->getCustomLocaleDefinitionFiles()
+			->mapWithKeys(fn (SplFileInfo $file) => [$file->getBasename('.json') => $this->getDefinition($file)])
+			->all();
+
+		foreach ($customDefinitions as $identifier => $definition) {
+			$result[$identifier] = array_replace_recursive($result[$identifier] ?? [], $definition);
+		}
+
+		return $result;
 	}
 }
