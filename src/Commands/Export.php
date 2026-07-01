@@ -9,7 +9,7 @@ use MohammadZarifiyan\LaravelLocaleKit\LocaleKit;
 
 class Export extends Command
 {
-	protected $signature = 'locale-kit:export {--directory = : The directory where locale definition files will be exported} {--clean-directory : Clean the directory before storing JSON files}';
+	protected $signature = 'locale-kit:export {--directory=resources/locales : The directory where locale definition files will be exported} {--clean-directory=false : Clean the directory before storing JSON files}';
 
 	protected $description = 'Export all locale definitions as JSON files.';
 
@@ -19,8 +19,10 @@ class Export extends Command
 
 		File::ensureDirectoryExists($directory);
 
-		if (!File::isEmptyDirectory($directory) && $this->option('clean-directory')) {
+		if (!File::isEmptyDirectory($directory) && $this->hasOption('clean-directory') && $this->option('clean-directory') !== 'false') {
 			File::cleanDirectory($directory);
+
+			$this->info(sprintf('Cleaned directory "%s".', $directory));
 		}
 
 		$meta = [
@@ -62,6 +64,6 @@ class Export extends Command
 	{
 		$directory = $this->option('directory');
 
-		return $directory ? base_path($directory) : resource_path('locales');
+		return base_path($directory);
 	}
 }
