@@ -9,7 +9,7 @@ use MohammadZarifiyan\LaravelLocaleKit\LocaleKit;
 
 class Export extends Command
 {
-	protected $signature = 'locale-kit:export {--directory: The directory where locale definition files will be exported} {--clean-directory: Clean the directory before storing JSON files}';
+	protected $signature = 'locale-kit:export {--directory = : The directory where locale definition files will be exported} {--clean-directory : Clean the directory before storing JSON files}';
 
 	protected $description = 'Export all locale definitions as JSON files.';
 
